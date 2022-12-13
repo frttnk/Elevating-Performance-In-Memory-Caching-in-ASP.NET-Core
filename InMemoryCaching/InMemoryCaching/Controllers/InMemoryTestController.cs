@@ -17,23 +17,28 @@ namespace InMemoryCaching.Controllers
         [HttpGet]
         public IActionResult InMemoryCache()
         {
-            string result =  "";
-            var cacheResult = _cache.Get<string>("CacheKey") ?? "";
-            if (cacheResult=="")
+            string result = "";
+            //var cacheResult = _cache.Get<string>("CacheKey") ?? "";
+            //if (cacheResult=="")
+            //{
+            //    result = FakeDbConnection();
+            //    // you can put everything as a cachekey.
+            //    // you can configure cache time up to your requirements.
+            //    _cache.Set<string>("CacheKey", result, TimeSpan.FromMinutes(2));
+            //}
+
+            if (!_cache.TryGetValue("CacheKey", out result))
             {
                 result = FakeDbConnection();
-                // you can put everything as a cachekey.
-                // you can configure cache time up to your requirements.
                 _cache.Set<string>("CacheKey", result, TimeSpan.FromMinutes(2));
             }
             return Ok(result);
         }
 
-
         private string FakeDbConnection()
         {
             return "Connected Db";
         }
-        
+
     }
 }
