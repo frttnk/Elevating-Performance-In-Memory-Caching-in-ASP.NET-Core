@@ -27,11 +27,24 @@ namespace InMemoryCaching.Controllers
             //    _cache.Set<string>("CacheKey", result, TimeSpan.FromMinutes(2));
             //}
 
+            //if (!_cache.TryGetValue("CacheKey", out result))
+            //{
+            //    result = FakeDbConnection();
+            //    _cache.Set<string>("CacheKey", result, TimeSpan.FromMinutes(2));
+            //}
+
             if (!_cache.TryGetValue("CacheKey", out result))
             {
                 result = FakeDbConnection();
-                _cache.Set<string>("CacheKey", result, TimeSpan.FromMinutes(2));
+                var cacheOptions = new MemoryCacheEntryOptions()
+                    .SetSlidingExpiration(TimeSpan.FromHours(1))//how long it will be inactive
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10))// if there is a problem with sliding expiration, the absolute expiration will determine the cache
+                    .SetPriority(CacheItemPriority.High)// how important the cache is
+                    .SetSize(2048);//size of cache entry value
+                _cache.Set<string>("CacheKey", result, cacheOptions);
             }
+
+            
             return Ok(result);
         }
 
